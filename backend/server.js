@@ -84,6 +84,11 @@ app.use((req, res) => {
     res.status(404).json({ message: `Route ${req.method} ${req.originalUrl} not found` });
 });
 
-server.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    server.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
+
