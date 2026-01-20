@@ -14,6 +14,7 @@ const Register = () => {
         e.preventDefault();
         setLoading(true);
         try {
+            console.log("Sending registration data:", formData);
             const { data } = await registerUser(formData);
             // login(data); // Removed auto-login
             toast.success('Registration successful! Please log in.');

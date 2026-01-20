@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Student = require('../models/Student'); // Import Student model
 const jwt = require('jsonwebtoken');
 
 // Generate JWT
@@ -20,6 +21,7 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
+        // 1. Create User
         const user = await User.create({
             name,
             email,
@@ -27,23 +29,38 @@ exports.register = async (req, res) => {
             role: 'student'
         });
 
+        // 2. Create Linked Student Profile automatically
         if (user) {
+            const student = await Student.create({
+                name,
+                email,
+                age: 18, // Default
+                course: 'Unassigned', // Default
+                status: 'Active',
+                studentId: 'STU' + Math.floor(1000 + Math.random() * 9000) // Simple ID gen
+            });
+
+            // Update user with student profile reference
+            user.studentProfile = student._id;
+            await user.save();
+
             res.status(201).json({
                 _id: user._id,
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id, user.role)
+                token: generateToken(user._id, user.role),
+                studentProfile: student._id
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
     } catch (err) {
+        console.error(err);
         if (err.name === 'ValidationError') {
             const messages = Object.values(err.errors).map(val => val.message);
             return res.status(400).json({ message: messages.join(', ') });
         }
-        console.error("Register Error:", err);
         res.status(500).json({ message: 'Server error processing registration' });
     }
 };
@@ -66,7 +83,7 @@ exports.login = async (req, res) => {
         }
 
         // 2. Check for Student in Database
-        const user = await User.findOne({ email }).select('+password');
+        const user = await User.findOne({ email }).select('+password').populate('studentProfile');
 
         if (user && (await user.matchPassword(password))) {
             res.json({
@@ -74,6 +91,7 @@ exports.login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                avatar: user.studentProfile?.avatar || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                 token: generateToken(user._id, user.role)
             });
         } else {
@@ -98,9 +116,13 @@ exports.getProfile = async (req, res) => {
                 role: 'admin'
             });
         }
-        const user = await User.findById(req.user.id);
+        const user = await User.findById(req.user.id).populate('studentProfile');
         if (user) {
-            res.json(user);
+            const userObj = user.toObject();
+            if (user.studentProfile) {
+                userObj.avatar = user.studentProfile.avatar;
+            }
+            res.json(userObj);
         } else {
             res.status(404).json({ message: 'User not found' });
         }

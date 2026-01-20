@@ -1,25 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BookOpen, Calendar, Award } from 'lucide-react';
+import api from '../services/api';
+import AuthContext from '../context/AuthContext';
 
 const Academics = () => {
+    const { user } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('timetable');
+    const [timetable, setTimetable] = useState([]);
+    const [grades, setGrades] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const timetable = [
-        { day: 'Monday', time: '09:00 - 11:00', course: 'Database Systems', room: 'Lab 304', type: 'Lecture' },
-        { day: 'Monday', time: '13:00 - 15:00', course: 'Web Development', room: 'Lab 201', type: 'Lab' },
-        { day: 'Tuesday', time: '10:00 - 12:00', course: 'Algorithms', room: 'Hall A', type: 'Lecture' },
-        { day: 'Wednesday', time: '09:00 - 11:00', course: 'Linear Algebra', room: 'Hall B', type: 'Lecture' },
-        { day: 'Thursday', time: '14:00 - 16:00', course: 'Data Structures', room: 'Lab 304', type: 'Lab' },
-        { day: 'Friday', time: '11:00 - 13:00', course: 'Ethics in CS', room: 'Hall C', type: 'Seminar' },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [timetableRes, gradesRes] = await Promise.all([
+                    api.get('/timetable'),
+                    api.get(`/grades/student/${user._id}`)
+                ]);
+                setTimetable(timetableRes.data);
 
-    const grades = [
-        { code: 'CS301', course: 'Algorithms & Complexity', credits: 4, score: 92, grade: 'A', status: 'Pass' },
-        { code: 'CS302', course: 'Database Systems', credits: 4, score: 88, grade: 'B+', status: 'Pass' },
-        { code: 'CS303', course: 'Web Development', credits: 3, score: 95, grade: 'A+', status: 'Pass' },
-        { code: 'MATH201', course: 'Linear Algebra', credits: 3, score: 89, grade: 'A-', status: 'Pass' },
-        { code: 'CS304', course: 'Operating Systems', credits: 4, score: 76, grade: 'B', status: 'Pass' },
-    ];
+                // Filter grades for current student just in case (though endpoint should handle it)
+                const studentGrades = gradesRes.data.filter(g => g.studentId === user._id || g.studentId?._id === user._id);
+                setGrades(studentGrades);
+            } catch (error) {
+                console.error("Failed to fetch academic data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (user) fetchData();
+    }, [user]);
+
+    // Calculate GPA only for the current semester
+    const calculateGPA = () => {
+        const currentSemester = user.semester || 'Semester 1';
+        const currentGrades = grades.filter(g => g.semester === currentSemester);
+
+        if (!currentGrades.length) return "N/A";
+
+        const points = {
+            'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+            'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+            'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+            'D+': 1.3, 'D': 1.0, 'F': 0.0
+        };
+        const totalPoints = currentGrades.reduce((acc, g) => acc + (points[g.grade] || 0), 0);
+        return (totalPoints / currentGrades.length).toFixed(2);
+    };
 
     return (
         <div className="space-y-6 animate-fade-in-up">
@@ -41,87 +69,93 @@ const Academics = () => {
                 </div>
             </div>
 
-            {activeTab === 'timetable' && (
-                <div className="card p-0">
-                    <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                        <h2 className="font-bold text-lg text-text-main flex items-center gap-2">
-                            <Calendar className="text-primary" size={20} />
-                            Weekly Schedule
-                        </h2>
-                    </div>
-                    <div className="table-container border-0 rounded-none">
-                        <table className="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Day</th>
-                                    <th>Time</th>
-                                    <th>Course</th>
-                                    <th>Location</th>
-                                    <th>Type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {timetable.map((t, i) => (
-                                    <tr key={i}>
-                                        <td className="font-medium text-text-main">{t.day}</td>
-                                        <td className="text-text-muted">{t.time}</td>
-                                        <td className="font-semibold text-primary">{t.course}</td>
-                                        <td>{t.room}</td>
-                                        <td>
-                                            <span className={`badge ${t.type === 'Lecture' ? 'badge-info' : t.type === 'Lab' ? 'badge-warning' : 'badge-success'}`}>
-                                                {t.type}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
-            {activeTab === 'grades' && (
-                <div className="card p-0">
-                    <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                        <h2 className="font-bold text-lg text-text-main flex items-center gap-2">
-                            <Award className="text-primary" size={20} />
-                            Academic History
-                        </h2>
-                        <div className="text-sm bg-slate-50 px-3 py-1 rounded-md border border-slate-200">
-                            <strong>GPA:</strong> 3.82
+            {loading ? (
+                <div className="card p-12 text-center text-text-muted">Loading academic data...</div>
+            ) : (
+                <>
+                    {activeTab === 'timetable' && (
+                        <div className="card p-0">
+                            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                                <h2 className="font-bold text-lg text-text-main flex items-center gap-2">
+                                    <Calendar className="text-primary" size={20} />
+                                    Weekly Schedule
+                                </h2>
+                            </div>
+                            <div className="table-container border-0 rounded-none">
+                                <table className="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Time</th>
+                                            <th>Course</th>
+                                            <th>Location</th>
+                                            <th>Semester</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {timetable.length === 0 ? (
+                                            <tr><td colSpan="5" className="text-center py-8 text-text-muted">No schedule available.</td></tr>
+                                        ) : timetable.sort((a, b) => a.startTime.localeCompare(b.startTime)).map((t, i) => (
+                                            <tr key={i}>
+                                                <td className="font-medium text-text-main">{t.day}</td>
+                                                <td className="text-text-muted">{t.startTime} - {t.endTime}</td>
+                                                <td className="font-semibold text-primary">{t.subject}</td>
+                                                <td>{t.location}</td>
+                                                <td>
+                                                    <span className="badge badge-info">{t.semester || 'N/A'}</span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div className="table-container border-0 rounded-none">
-                        <table className="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Course Code</th>
-                                    <th>Course Name</th>
-                                    <th>Credits</th>
-                                    <th>Score</th>
-                                    <th>Grade</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {grades.map((g, i) => (
-                                    <tr key={i}>
-                                        <td className="text-text-muted font-mono text-xs">{g.code}</td>
-                                        <td className="font-medium text-text-main">{g.course}</td>
-                                        <td>{g.credits}</td>
-                                        <td className="font-semibold">{g.score}%</td>
-                                        <td className={`font-bold ${g.grade.startsWith('A') ? 'text-green-600' : 'text-blue-600'}`}>{g.grade}</td>
-                                        <td>
-                                            <span className="badge badge-success">
-                                                {g.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                    )}
+
+                    {activeTab === 'grades' && (
+                        <div className="card p-0">
+                            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                                <h2 className="font-bold text-lg text-text-main flex items-center gap-2">
+                                    <Award className="text-primary" size={20} />
+                                    Academic History
+                                </h2>
+                                <div className="text-sm bg-slate-50 px-3 py-1 rounded-md border border-slate-200">
+                                    <strong>GPA:</strong> {calculateGPA()}
+                                </div>
+                            </div>
+                            <div className="table-container border-0 rounded-none">
+                                <table className="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course Code</th>
+                                            <th>Course Name</th>
+                                            <th>Score</th>
+                                            <th>Grade</th>
+                                            <th>Semester</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {grades.length === 0 ? (
+                                            <tr><td colSpan="5" className="text-center py-8 text-text-muted">No grades recorded.</td></tr>
+                                        ) : grades.map((g, i) => (
+                                            <tr key={i}>
+                                                <td className="text-text-muted font-mono text-xs">{g.code}</td>
+                                                <td className="font-medium text-text-main">{g.subject}</td>
+                                                <td className="font-semibold">{g.score ? `${g.score}%` : 'N/A'}</td>
+                                                <td className={`font-bold ${g.grade.startsWith('A') ? 'text-green-600' : g.grade === 'F' ? 'text-red-500' : 'text-blue-600'}`}>{g.grade}</td>
+                                                <td>
+                                                    <span className="badge badge-success">
+                                                        {g.semester || 'N/A'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

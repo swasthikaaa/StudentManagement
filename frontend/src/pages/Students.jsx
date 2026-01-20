@@ -2,11 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Edit2, Trash2, Eye } from 'lucide-react';
 import api, { deleteStudent } from '../services/api';
+import ConfirmationModal from '../components/ConfirmationModal';
+import StudentViewModal from '../components/StudentViewModal';
+import toast from 'react-hot-toast';
 
 const Students = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Delete Modal State
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [studentToDelete, setStudentToDelete] = useState(null);
+
+    // View Modal State
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState(null);
 
     useEffect(() => {
         fetchStudents();
@@ -23,14 +34,28 @@ const Students = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this student?')) {
-            try {
-                await deleteStudent(id);
-                setStudents(students.filter(student => student._id !== id));
-            } catch (error) {
-                console.error("Failed to delete student");
-            }
+    const handleDeleteClick = (id) => {
+        setStudentToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleViewClick = (student) => {
+        setSelectedStudent(student);
+        setIsViewModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!studentToDelete) return;
+        try {
+            await deleteStudent(studentToDelete);
+            setStudents(students.filter(student => student._id !== studentToDelete));
+            toast.success("Student deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete student");
+            toast.error("Failed to delete student");
+        } finally {
+            setIsDeleteModalOpen(false);
+            setStudentToDelete(null);
         }
     };
 
@@ -46,6 +71,9 @@ const Students = () => {
                     <h1 className="text-2xl font-bold text-text-main">Student Directory</h1>
                     <p className="text-sm text-text-muted mt-1">Manage all registered students</p>
                 </div>
+                <Link to="/admin/students/add" className="btn-primary flex items-center gap-2">
+                    <Plus size={18} /> Add Student
+                </Link>
             </div>
 
             <div className="card p-0">
@@ -106,13 +134,17 @@ const Students = () => {
                                         </td>
                                         <td>
                                             <div className="flex items-center gap-2">
-                                                <button className="p-1.5 hover:bg-slate-100 rounded text-text-muted hover:text-primary transition-colors">
+                                                <button
+                                                    onClick={() => handleViewClick(student)}
+                                                    className="p-1.5 hover:bg-slate-100 rounded text-text-muted hover:text-primary transition-colors"
+                                                    title="View Profile"
+                                                >
                                                     <Eye size={18} />
                                                 </button>
                                                 <Link to={`/admin/students/edit/${student._id}`} className="p-1.5 hover:bg-slate-100 rounded text-text-muted hover:text-amber-600 transition-colors">
                                                     <Edit2 size={18} />
                                                 </Link>
-                                                <button onClick={() => handleDelete(student._id)} className="p-1.5 hover:bg-slate-100 rounded text-text-muted hover:text-red-600 transition-colors">
+                                                <button onClick={() => handleDeleteClick(student._id)} className="p-1.5 hover:bg-slate-100 rounded text-text-muted hover:text-red-600 transition-colors">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -124,6 +156,22 @@ const Students = () => {
                     </table>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={confirmDelete}
+                title="Delete Student"
+                message="Are you sure you want to delete this student? This action cannot be undone."
+                confirmText="Delete"
+                type="danger"
+            />
+
+            <StudentViewModal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                student={selectedStudent}
+            />
         </div>
     );
 };

@@ -4,7 +4,8 @@ import { Users, GraduationCap, Clock, Award, Download, ArrowUp, ArrowDown, UserP
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import api from '../services/api';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
+import toast from 'react-hot-toast';
 
 const StatCard = ({ title, value, icon: Icon, colorClass, change }) => (
     <div className="card p-6 flex items-start justify-between hover:shadow-lg transition-shadow">
@@ -66,29 +67,43 @@ const Dashboard = () => {
     };
 
     const downloadReport = () => {
-        const doc = new jsPDF();
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(20);
-        doc.setTextColor(30, 41, 59); // Slate-800
-        doc.text("Enrollment Report", 14, 22);
+        try {
+            if (!data || data.length === 0) {
+                toast.error("No data available to export");
+                return;
+            }
 
-        doc.setFontSize(10);
-        doc.setTextColor(100, 116, 139); // Slate-500
-        doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+            const doc = new jsPDF();
 
-        const tableColumn = ["Month", "New Enrollments"];
-        const tableRows = data.map(item => [item.name, item.students]);
+            const tableColumn = ["Month", "New Enrollments"];
+            const tableRows = data.map(item => [item.name, item.students]);
 
-        doc.autoTable({
-            head: [tableColumn],
-            body: tableRows,
-            startY: 35,
-            theme: 'striped',
-            headStyles: { fillColor: [79, 70, 229] }, // Indigo-600
-            styles: { fontSize: 10, cellPadding: 5 }
-        });
+            autoTable(doc, {
+                head: [tableColumn],
+                body: tableRows,
+                startY: 35,
+                theme: 'striped',
+                headStyles: { fillColor: [79, 70, 229] }, // Indigo-600
+                styles: { fontSize: 10, cellPadding: 5 },
+                didDrawPage: function (data) {
+                    // Header
+                    doc.setFontSize(20);
+                    doc.setTextColor(30, 41, 59);
+                    doc.text("Enrollment Report", 14, 22);
 
-        doc.save("enrollment_report.pdf");
+                    // Date
+                    doc.setFontSize(10);
+                    doc.setTextColor(100, 116, 139);
+                    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+                }
+            });
+
+            doc.save("enrollment_report.pdf");
+            toast.success("Report downloaded successfully");
+        } catch (error) {
+            console.error("Export failed:", error);
+            toast.error("Failed to export report");
+        }
     };
 
     return (

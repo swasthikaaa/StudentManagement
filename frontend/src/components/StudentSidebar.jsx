@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, Clock, User, LogOut } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Clock, User, LogOut, DollarSign } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 
 const StudentSidebar = () => {
@@ -10,6 +10,7 @@ const StudentSidebar = () => {
         { name: 'Dashboard', path: '/portal/dashboard', icon: LayoutDashboard },
         { name: 'Academics', path: '/portal/academics', icon: BookOpen },
         { name: 'Progression', path: '/portal/progression', icon: Clock },
+        { name: 'Finance', path: '/portal/finance', icon: DollarSign },
         { name: 'Profile', path: '/portal/profile', icon: User },
     ];
 
@@ -17,8 +18,12 @@ const StudentSidebar = () => {
         <div className="h-screen w-64 fixed left-0 top-0 z-50 bg-primary-dark text-white flex flex-col shadow-xl">
             <div className="p-6 border-b border-slate-700/50">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center font-bold text-white shadow-lg shadow-secondary/30">
-                        {user?.name?.charAt(0) || 'S'}
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-secondary flex items-center justify-center font-bold text-white shadow-lg shadow-secondary/30">
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                        ) : (
+                            user?.name?.charAt(0) || 'S'
+                        )}
                     </div>
                     <div>
                         <h1 className="text-lg font-bold tracking-tight">StudentPortal</h1>

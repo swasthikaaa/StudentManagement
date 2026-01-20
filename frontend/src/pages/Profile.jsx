@@ -36,8 +36,18 @@ const Profile = () => {
                 {/* User Info Card */}
                 <div className="lg:col-span-1">
                     <div className="card p-6 flex flex-col items-center text-center">
-                        <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white font-bold text-4xl mb-4 shadow-lg">
-                            {user?.name?.charAt(0) || 'S'}
+                        <div className="w-24 h-24 rounded-full overflow-hidden mb-4 shadow-lg border-4 border-white ring-1 ring-slate-100 bg-slate-50 flex items-center justify-center">
+                            {user?.avatar ? (
+                                <img
+                                    src={user.avatar}
+                                    alt={user.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <span className="text-primary font-bold text-4xl uppercase">
+                                    {user?.name?.charAt(0) || 'S'}
+                                </span>
+                            )}
                         </div>
                         <h2 className="text-xl font-bold text-text-main">{user?.name}</h2>
                         <p className="text-text-muted text-sm">{user?.email}</p>

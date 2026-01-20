@@ -21,6 +21,14 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Course name is required']
     },
+    studentId: {
+        type: String,
+        unique: true
+    },
+    semester: {
+        type: String,
+        default: 'Semester 1'
+    },
     status: {
         type: String,
         enum: ['Active', 'Inactive', 'Graduated'],
@@ -29,6 +37,24 @@ const studentSchema = new mongoose.Schema({
     avatar: {
         type: String,
         default: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'
+    },
+    phone: {
+        type: String
+    },
+    address: {
+        type: String
+    },
+    dob: {
+        type: Date
+    },
+    gender: {
+        type: String,
+        enum: ['Male', 'Female', 'Other']
+    },
+    guardian: {
+        name: String,
+        phone: String,
+        relation: String
     }
 }, {
     timestamps: true

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, UserPlus, LogOut, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, Users, UserPlus, LogOut, ChevronLeft, GraduationCap, ClipboardList, DollarSign, Calendar, Clock } from 'lucide-react';
 import AuthContext from '../context/AuthContext';
 
 const Sidebar = () => {
@@ -10,6 +10,11 @@ const Sidebar = () => {
         { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'All Students', path: '/admin/students', icon: Users },
         { name: 'Enroll Student', path: '/admin/students/add', icon: UserPlus },
+        { name: 'Timetable', path: '/admin/timetable', icon: Calendar },
+        { name: 'Grades', path: '/admin/grades', icon: GraduationCap },
+        { name: 'Results', path: '/admin/results', icon: ClipboardList },
+        { name: 'Progression', path: '/admin/progression', icon: Clock },
+        { name: 'Finance', path: '/admin/finance', icon: DollarSign },
     ];
 
     return (
@@ -21,7 +26,6 @@ const Sidebar = () => {
                     </div>
                     <div>
                         <h1 className="text-lg font-bold tracking-tight">AdminPortal</h1>
-                        <p className="text-xs text-slate-400">School Management</p>
                     </div>
                 </div>
             </div>

@@ -11,6 +11,13 @@ import StudentDashboard from './pages/StudentDashboard';
 import Academics from './pages/Academics';
 import Progression from './pages/Progression';
 import Profile from './pages/Profile';
+import AdminGrades from './pages/AdminGrades';
+import AdminResults from './pages/AdminResults';
+import AdminProgression from './pages/AdminProgression';
+import AdminTimetable from './pages/AdminTimetable';
+
+import AdminFinance from './pages/AdminFinance';
+import StudentFinance from './pages/StudentFinance';
 import AuthContext from './context/AuthContext';
 
 // Protected Route Component
@@ -41,6 +48,11 @@ function App() {
                             <Route path="students" element={<Students />} />
                             <Route path="students/add" element={<StudentForm />} />
                             <Route path="students/edit/:id" element={<StudentForm />} />
+                            <Route path="timetable" element={<AdminTimetable />} />
+                            <Route path="grades" element={<AdminGrades />} />
+                            <Route path="results" element={<AdminResults />} />
+                            <Route path="progression" element={<AdminProgression />} />
+                            <Route path="finance" element={<AdminFinance />} />
                             <Route path="*" element={<Navigate to="dashboard" replace />} />
                         </Routes>
                     </AdminLayout>
@@ -55,6 +67,7 @@ function App() {
                             <Route path="dashboard" element={<StudentDashboard />} />
                             <Route path="academics" element={<Academics />} />
                             <Route path="progression" element={<Progression />} />
+                            <Route path="finance" element={<StudentFinance />} />
                             <Route path="profile" element={<Profile />} />
                             <Route path="*" element={<Navigate to="dashboard" replace />} />
                         </Routes>

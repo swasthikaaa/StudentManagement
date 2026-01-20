@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
+import Navbar from './Navbar';
 import { Toaster } from 'react-hot-toast';
 
 const AdminLayout = ({ children }) => {
@@ -8,6 +9,7 @@ const AdminLayout = ({ children }) => {
             <Sidebar />
             <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
                 <div className="max-w-6xl mx-auto space-y-8 pb-10">
+                    <Navbar />
                     {children}
                 </div>
             </main>
