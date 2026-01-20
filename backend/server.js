@@ -39,10 +39,10 @@ app.use((req, res, next) => {
 });
 
 // Database Connection
-const MONGODB_URI = "mongodb+srv://Swasthika23:IaCQgg9HG7ikEF40@purelyhomecluster.qllxyb5.mongodb.net/student_management_db?appName=PurelyHomeCluster";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/student_management";
 
 mongoose.connect(MONGODB_URI)
-    .then(() => console.log('✅ Connected to MongoDB (student_management_db)'))
+    .then(() => console.log('✅ Connected to MongoDB'))
     .catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
 // Socket.io connection handling
