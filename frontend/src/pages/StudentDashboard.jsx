@@ -112,11 +112,11 @@ const StudentDashboard = () => {
     }
 
     return (
-        <div className="space-y-8 animate-fade-in-up">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 md:space-y-8 animate-fade-in-up">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                 <div>
-                    <h1 className="text-2xl font-bold text-text-main">Welcome back, {user?.name?.split(' ')[0]}!</h1>
-                    <p className="text-text-muted text-sm">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                    <h1 className="text-xl md:text-2xl font-bold text-text-main">Welcome back, {user?.name?.split(' ')[0]}!</h1>
+                    <p className="text-text-muted text-xs md:text-sm">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                 </div>
             </div>
 

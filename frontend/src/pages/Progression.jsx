@@ -67,8 +67,8 @@ const Progression = () => {
         <div className="space-y-6 animate-fade-in-up">
             <h1 className="text-2xl font-bold text-text-main">Student Progression</h1>
 
-            <div className="card p-8">
-                <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="card p-4 md:p-8">
+                <div className="flex flex-col lg:flex-row gap-8 items-start">
                     <div className="flex-1 space-y-6">
                         <div>
                             <h2 className="text-lg font-bold text-text-main mb-2">Semester 2, 2024 Enrollment</h2>

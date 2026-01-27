@@ -191,24 +191,24 @@ const StudentFinance = () => {
     ];
 
     return (
-        <div className="space-y-8 animate-fade-in-up">
-            <div className="flex items-center justify-between">
+        <div className="space-y-6 md:space-y-8 animate-fade-in-up">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-text-main">Student Finances</h1>
-                    <p className="text-text-muted text-sm mt-1">Manage payments and view history</p>
+                    <h1 className="text-xl md:text-2xl font-bold text-text-main">Student Finances</h1>
+                    <p className="text-text-muted text-xs md:text-sm mt-1">Manage payments and view history</p>
                 </div>
-                <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm w-full md:w-auto">
                     <button
                         onClick={() => setActiveTab('pay')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'pay' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'pay' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
                     >
                         Make Payment
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'history' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'history' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
                     >
-                        Payment History
+                        History
                     </button>
                 </div>
             </div>

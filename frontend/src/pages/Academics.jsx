@@ -51,20 +51,20 @@ const Academics = () => {
 
     return (
         <div className="space-y-6 animate-fade-in-up">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-text-main">Academics</h1>
-                <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <h1 className="text-xl md:text-2xl font-bold text-text-main">Academics</h1>
+                <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm w-full md:w-auto">
                     <button
                         onClick={() => setActiveTab('timetable')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'timetable' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'timetable' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
                     >
                         Timetable
                     </button>
                     <button
                         onClick={() => setActiveTab('grades')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'grades' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'grades' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-main'}`}
                     >
-                        Grades & Results
+                        Grades
                     </button>
                 </div>
             </div>

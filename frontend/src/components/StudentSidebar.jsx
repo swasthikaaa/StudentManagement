@@ -15,7 +15,7 @@ const StudentSidebar = () => {
     ];
 
     return (
-        <div className="h-screen w-64 fixed left-0 top-0 z-50 bg-primary-dark text-white flex flex-col shadow-xl">
+        <div className="h-screen w-64 fixed left-0 top-0 z-50 bg-primary-dark text-white hidden md:flex flex-col shadow-xl">
             <div className="p-6 border-b border-slate-700/50">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg overflow-hidden bg-secondary flex items-center justify-center font-bold text-white shadow-lg shadow-secondary/30">
