@@ -62,5 +62,3 @@ const StudentLayout = ({ children }) => {
 };
 
 export default StudentLayout;
-
-export default StudentLayout;
